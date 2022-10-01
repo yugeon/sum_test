@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+
+    nginx_front:
+        image: "nginx:1.22.0-alpine"
+        container_name: "nginx_front"
+        ports:
+            - "80:80"
+        volumes:
+            - "./docker/nginx/nginx.main.conf:/etc/nginx/nginx.conf"
+            - "./docker/nginx/conf.d:/etc/nginx/conf.d"
+            # - "nginx_cache:/var/cache/nginx"
+            # - "/etc/letsencrypt:/etc/letsencrypt"
+            - "${HOMEDIR}/:/var/www"
+            - "./docker/nginx/logs:/var/log/nginx"
+        networks:
+            - "frontend"
+        restart: "unless-stopped"
+
+    phpfpm_8_1:
+        build: ./docker/images/php/php8.1
+        container_name: "phpfpm_8_1"
+        networks:
+            - "frontend"
+            - "backend"
+        volumes:
+            - "${HOMEDIR}/:/var/www"
+        user: "${UID}:${UID}"
+        restart: "unless-stopped"
+        extra_hosts:
+            host.docker.internal: host-gateway
+
+    phpcomposer:
+        image: "composer:2.3"
+        container_name: "phpcomposer"
+        command: ['echo', 'use manual run']
+        volumes:
+            - "${HOMEDIR}/:/app"
+            # - "composer_cache:/tmp"
+        user: "${UID}:${UID}"
+        restart: "no"
+        # docker-compose run phpcomposer composer install -d=WORKING-DIR --no-dev --ignore-platform-reqs
+
+    mariadb:
+        image: ghcr.io/linuxserver/mariadb:alpine
+        container_name: mariadb
+        environment:
+            - PUID=${UID}
+            - PGID=${UID}
+            - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+            - TZ=Europe/Moscow
+            - MYSQL_DATABASE=${MYSQL_DATABASE} #optional
+            - MYSQL_USER=${MYSQL_USER} #optional
+            - MYSQL_PASSWORD=${MYSQL_DATABASE_PASSWORD} #optional
+            #- REMOTE_SQL=http://URL1/your.sql,https://URL2/your.sql #optional
+        volumes:
+        #     - "mysql_data:/config"
+            - ${HOMEDIR}/create.sql:/config/initdb.d/create.sql
+        ports:
+            - "127.0.0.1:3306:3306"
+        networks:
+            - "backend"
+        restart: "unless-stopped"
+
+    redis:
+        image: "redis:6.2-alpine"
+        container_name: "redis"
+        networks:
+            - "backend"
+        # volumes:
+        #     - "redis_data:/data"
+        restart: "unless-stopped"
+
+# volumes:
+    # nginx_cache:
+    # composer_cache:
+    # mysql_data:
+    # redis_data:
+
+networks:
+    frontend:
+    backend:

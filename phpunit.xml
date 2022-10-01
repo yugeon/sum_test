@@ -1,0 +1,32 @@
+<phpunit
+    colors="true"
+    bootstrap="vendor/autoload.php"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>./tests/</directory>
+            <exclude>./tests/Functional/</exclude>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory>./tests/Functional/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage includeUncoveredFiles="true"
+                processUncoveredFiles="true"
+                ignoreDeprecatedCodeUnits="true"
+                disableCodeCoverageIgnore="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <!-- <exclude> -->
+            <!-- <directory suffix=".php">src/generated</directory> -->
+                <!-- <file>src/autoload.php</file> -->
+        <!-- </exclude> -->
+    </coverage>
+    <logging>
+        <!--<log type="coverage-text" target="php://stdout"/>-->
+    </logging>
+</phpunit>

@@ -1,0 +1,6 @@
+CREATE SCHEMA IF NOT EXISTS test;
+
+CREATE  TABLE test.sumtable (
+	id                   INT UNSIGNED NOT NULL  AUTO_INCREMENT  PRIMARY KEY,
+	sumvalue             INT UNSIGNED
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
