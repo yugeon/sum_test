@@ -1,6 +1,6 @@
 <?php
 
-use App\InProgressException;
+use App\InProcessException;
 use App\SumController;
 
 define('APP_DIR', realpath(__DIR__ . '/../app'));
@@ -22,7 +22,7 @@ if ('/test-sum-action' === $action) {
     try {
         $sum = $sumController->sumAction($_GET['ikey'] ?? null, $_GET['number'] ?? null);
         var_dump($sum);
-    } catch (InProgressException $e) {
+    } catch (InProcessException $e) {
         echo 'Operation in progress, try later...';
     }
 
